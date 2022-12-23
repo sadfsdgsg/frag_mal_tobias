@@ -12,15 +12,37 @@
  * this project also releases on GitHub:
  * https://github.com/HelTecAutomation/Heltec_ESP32
 */
-#include "Arduino.h"
+
+/*
+to get the heltec board to run, do the following defines in heltec.h:
+#define WIFI_LoRa_32
+#define RST_LoRa 15
+#define DIO0 0
+*/
+
 #include "heltec.h"
 #include "WiFi.h"
 #include "../lib/heltec/examples/Factory_Test/WIFI_Kit_32_FactoryTest/images.h"
+#include "config.h"
 
-void logo(){
-	Heltec.display -> clear();
-	Heltec.display -> drawXbm(0,5,logo_width,logo_height,(const unsigned char *)logo_bits);
-	Heltec.display -> display();
+void display_test(){
+	unsigned long b = 1;
+	String str = "a";
+	uint16_t remaining_width = Heltec.display->getWidth();
+	uint8_t width_letter = 10;
+
+	while (remaining_width >= width_letter){
+		Heltec.display -> clear();
+		Heltec.display -> setColor(OLEDDISPLAY_COLOR::WHITE);
+		str += "a";
+		Heltec.display -> drawString(0, 0, str);
+		Heltec.display -> drawString(0, 15, String(b));
+		Heltec.display -> display();
+		b++;
+		remaining_width -= width_letter;
+		delay(500);
+	}
+	Heltec.display -> setColor(OLEDDISPLAY_COLOR::WHITE);
 }
 
 void WIFISetUp(void)
@@ -28,13 +50,13 @@ void WIFISetUp(void)
 	// Set WiFi to station mode and disconnect from an AP if it was previously connected
 	WiFi.disconnect(true);
 	delay(1000);
-	WiFi.mode(WIFI_STA);
+	WiFi.mode(WIFI_MODE_STA);
 	WiFi.setAutoConnect(true);
-	WiFi.begin("iPhone","1234Kartoffel");
+	WiFi.begin(WIFI_SSID, WIFI_PASSPHRASE);
 	delay(100);
 
 	byte count = 0;
-	while(WiFi.status() != WL_CONNECTED && count < 10)
+	while(WiFi.status() != WL_CONNECTED && count < 20)
 	{
 		count ++;
 		delay(500);
@@ -103,25 +125,19 @@ void WIFIScan(void)
 	Heltec.display -> display();
 	delay(800);
 	Heltec.display -> clear();
-
 }
 
 void setup()
 {
-	pinMode(LED,OUTPUT);
-	digitalWrite(LED,HIGH);
-
 	Heltec.begin(true /*DisplayEnable Enable*/, false /*LoRa Enable*/, true /*Serial Enable*/);
-
-	logo();
-	delay(300);
 	Heltec.display->clear();
 	WIFISetUp();
   
-  WiFi.disconnect(true);// Reinitialize WiFi
-  delay(1000);
-  WiFi.mode(WIFI_STA);
-  WiFi.setAutoConnect(true);
+	WiFi.disconnect(true);// Reinitialize WiFi
+	delay(1000);
+	WiFi.mode(WIFI_STA);
+
+	display_test();
 }
 
 void loop()
