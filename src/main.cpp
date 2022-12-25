@@ -23,7 +23,8 @@ to get the heltec board to run, do the following defines in heltec.h:
 #include "heltec.h"
 #include "WiFi.h"
 #include "../lib/heltec/examples/Factory_Test/WIFI_Kit_32_FactoryTest/images.h"
-#include "config.h"
+#include "wifi_config.h"
+#include "debug_config.h"
 
 void display_test(){
 	unsigned long b = 1;
@@ -127,21 +128,98 @@ void WIFIScan(void)
 	Heltec.display -> clear();
 }
 
-void setup()
-{
-	Heltec.begin(true /*DisplayEnable Enable*/, false /*LoRa Enable*/, true /*Serial Enable*/);
-	Heltec.display->clear();
-	WIFISetUp();
-  
-	WiFi.disconnect(true);// Reinitialize WiFi
-	delay(1000);
-	WiFi.mode(WIFI_STA);
 
-	display_test();
+void clear_rectangle(int16_t width, int16_t height, int16_t start_x = 0 , int16_t start_y = 0){
+	for (int _x = start_x; _x < start_x+width; _x++)
+		for (int _y = start_y; _y < start_y+height; _y++)
+			Heltec.display -> clearPixel(_x, _y);
+}
+
+void lauflicht(uint8_t speed_prct, uint8_t width = 6, uint8_t height = 3){
+	static unsigned long last = 0;
+	static int16_t x = 0;
+	static const int16_t y = 20;
+	static int dir = 1;
+	speed_prct = speed_prct > 100 ? 100 : speed_prct;
+	uint8_t wait = 11 - speed_prct/10;
+
+	#ifdef DISPLAY_DEBUG
+		static bool debug_wait = false;
+		if (debug_wait && millis() - last < 200){
+			return;
+		} else {
+			debug_wait = false;
+		}
+	#endif
+
+	if (millis() - last < wait)
+		return;
+	last = millis();
+
+
+	for (uint8_t i = 0; i < height; i++)
+		Heltec.display -> setPixelColor(x+(-dir*width), y+i, OLEDDISPLAY_COLOR::BLACK);	
+
+	x += dir;
+	for (uint8_t i = 0; i < height; i++)
+		Heltec.display -> setPixelColor(x, y+i, OLEDDISPLAY_COLOR::WHITE);
+
+	#ifdef DISPLAY_DEBUG
+		int16_t debug_y;
+		int16_t font_height = 13;
+		if (y-font_height > 0)
+			debug_y = y-font_height;
+		else
+			debug_y = y+font_height;
+		clear_rectangle(39, font_height, 60, y-font_height);
+		Heltec.display -> drawString(60, debug_y, String(x));
+		if (0 >= x || x >= 127)
+			debug_wait = true;
+	#endif
+
+	Heltec.display -> display();
+
+	if (0 >= x || x >= 127)
+		dir = -dir;
+}
+
+void warte_animation(){
+	static unsigned long last = 0;
+	static int16_t pos_x = 0;
+	static const int16_t pos_y = 20;
+	static int dir = 1;
+
+	if (millis() - last < 10){
+		return;
+	}
+	last = millis();
+
+	pos_x += dir;
+
+	if (pos_x > 127 || pos_x < 0)
+		dir = -dir;
+
+	Heltec.display -> setPixelColor(pos_x, pos_y, OLEDDISPLAY_COLOR::INVERSE);
+	Heltec.display -> setPixelColor(pos_x, pos_y+dir, OLEDDISPLAY_COLOR::INVERSE);
+	Heltec.display -> display();
+}
+
+void setup(){
+	Heltec.begin(true /*DisplayEnable Enable*/, false /*LoRa Enable*/, true /*Serial Enable*/);
+	//WIFISetUp();
+  
+	//WiFi.disconnect(true);// Reinitialize WiFi
+	//WiFi.mode(WIFI_STA);
+	
+	//lauflicht();
+	Heltec.display -> clear();
 }
 
 void loop()
 {
-	WIFIScan();
-	delay(2000);
+	//delay(1000);
+	//digitalWrite(LED, !digitalRead(LED));
+
+	lauflicht(50, 20, 5);
+	//WIFIScan();
 }
