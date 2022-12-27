@@ -11,7 +11,7 @@ typedef void (*msg_handler)(String);
 /**
  * starts SPI connection to SX1262, creates the Radiolib module and configures SX1262
 */
-void start();
+void lora_start();
 /**
  * sets, whether the LoRa module should receive messages or not.
  * messages are received non-blocking, use 'register_msg_handler' to handle incoming messages
@@ -20,11 +20,11 @@ void shall_receive(bool);
 /**
  * registers a message handler, to which new messages will be directed.
 */
-void register_msg_handler(msg_handler);
+void register_lora_msg_handler(msg_handler);
 /**
  * checks if new messages were received and forwards it to the registered handler
 */
-void maintain();
+void lora_maintain();
 
 SX1262 radio = new Module(LORA_SS, DIO1, LORA_RST, LORA_BUSY);
 // flag to indicate that a packet was received
@@ -32,15 +32,6 @@ volatile bool lora_rcv_flag = false;
 // disable interrupt when it's not needed
 volatile bool lora_interrupt_enabled = true;
 msg_handler handler = nullptr;
-
-void start(){
-    SPI.begin(LORA_SCK,LORA_MISO,LORA_MOSI,LORA_SS);
-    // initialize SX1262 with default settings
-    Serial.print(F("[SX1262] Initializing ... "));
-    int state = radio.begin(868.0);
-    radio.setDio1Action(set_rcv_flag);
-    state = radio.startReceive();
-}
 
 void set_rcv_flag(){
     // check if we want to receive messages
@@ -51,15 +42,25 @@ void set_rcv_flag(){
     lora_rcv_flag = true;
 }
 
-void shall_receive(bool yes_or_no){
+void lora_start(){
+    SPI.begin(LORA_SCK,LORA_MISO,LORA_MOSI,LORA_SS);
+    // initialize SX1262 with default settings
+    Serial.print(F("[SX1262] Initializing ... "));
+    int state = radio.begin(868.0);
+    radio.setDio1Action(set_rcv_flag);
+    state = radio.startReceive();
+}
+
+
+void lora_shall_receive(bool yes_or_no){
     lora_interrupt_enabled = yes_or_no;
 }
 
-void register_msg_handler(msg_handler new_handler){
+void register_lora_msg_handler(msg_handler new_handler){
     handler = new_handler;
 }
 
-void maintain(){
+void lora_maintain(){
     if (!lora_interrupt_enabled){
         /*
             we dont want to receive/handle messages... 
