@@ -10,6 +10,7 @@
 |LoRa MISO  |11     |               |
 |LoRa RST   |12     |               |
 |LoRa BUSY  |13     |               |
+|DIO1       |14     |               |
 
 ## OLED
 
@@ -24,4 +25,3 @@
 |Bezeichnung|GPIO   |sonst.Info     |
 |-----------|-------|---------------|
 |ADC IN     |1      |               |
-|DIO1       |14     |               |
