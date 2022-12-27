@@ -1,3 +1,6 @@
 [submodule "lib/heltec"]
 	path = lib/heltec
 	url = https://github.com/HelTecAutomation/Heltec_ESP32.git
+[submodule "lib/RadioLib"]
+	path = lib/RadioLib
+	url = https://github.com/jgromes/RadioLib.git
