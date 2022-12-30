@@ -26,7 +26,9 @@ void register_lora_msg_handler(msg_handler);
 */
 void lora_maintain();
 
-SX1262 radio = new Module(LORA_SS, DIO1, LORA_RST, LORA_BUSY);
+
+Module m(LORA_SS, DIO1, LORA_RST, LORA_BUSY);
+SX1262 radio(&m);
 // flag to indicate that a packet was received
 volatile bool lora_rcv_flag = false;
 // disable interrupt when it's not needed
@@ -48,8 +50,10 @@ void lora_start(){
     // initialize SX1262 with default settings
     log_info("[SX1262] Initializing ... ");
     int state = radio.begin(868.0);
+    logf_info("[SX1262] begin, state '%d'", state);
     radio.setDio1Action(set_rcv_flag);
     state = radio.startReceive();
+    logf_info("[SX1262] startReceive, state '%d'", state);
 }
 
 
@@ -88,20 +92,24 @@ void lora_maintain(){
     if (handler == nullptr){
         log_warn("[LoRa] no message handler registered!");
     } else {
-        String str;
-        int state = radio.readData(str);
+        size_t packetLength = radio.getPacketLength();
+        logf_info("[LoRa] packet length '%d'", packetLength);
+        uint8_t msg[packetLength + 1];
+        int state = radio.readData(msg, packetLength);
+        msg[packetLength] = '\0';
 
         #ifdef USE_LOGGER
-            char* msg_buf;
-            sprintf(msg_buf, "[LoRa] message '%s' read with status: %d", str, state);
-            log_info(msg_buf);
+            logf_info("[LoRa] message '%s' read with status: %d", (char*) msg, state);
         #endif
 
-        handler(str);
+        handler((char*) msg);
     }
 
     /*
         reactivate "listening" mode 
     */
+    lora_rcv_flag = false;
+    radio.startReceive();
     lora_interrupt_enabled = true;
+
 }
