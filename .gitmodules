@@ -4,3 +4,6 @@
 [submodule "lib/RadioLib"]
 	path = lib/RadioLib
 	url = https://github.com/jgromes/RadioLib.git
+[submodule "lib/uc-log"]
+	path = lib/uc-log
+	url = https://github.com/sadfsdgsg/uc-log.git

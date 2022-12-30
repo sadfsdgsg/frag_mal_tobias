@@ -1,7 +1,7 @@
 #pragma once
 
 #include "pinout.h"
-#include "serial_debug.h"
+#include "logger.h"
 #include "Arduino.h"
 #include <RadioLib.h>
 
@@ -43,9 +43,10 @@ void set_rcv_flag(){
 }
 
 void lora_start(){
+    log_begin();
     SPI.begin(LORA_SCK,LORA_MISO,LORA_MOSI,LORA_SS);
     // initialize SX1262 with default settings
-    Serial.println(F("[SX1262] Initializing ... "));
+    log_info("[SX1262] Initializing ... ");
     int state = radio.begin(868.0);
     radio.setDio1Action(set_rcv_flag);
     state = radio.startReceive();
@@ -82,15 +83,20 @@ void lora_maintain(){
     */
     lora_interrupt_enabled = false;
 
-    DEBUG(F("[LoRa] received a message!"));
+    log_info("[LoRa] received a message!");
 
     if (handler == nullptr){
-        DEBUG(F("[LoRa] no message handler registered!"));
+        log_warn("[LoRa] no message handler registered!");
     } else {
         String str;
         int state = radio.readData(str);
-        sprintf(msg_buf, "[LoRa] message '%s' read with status: %d", str, state);
-        DEBUG(msg_buf);
+
+        #ifdef USE_LOGGER
+            char* msg_buf;
+            sprintf(msg_buf, "[LoRa] message '%s' read with status: %d", str, state);
+            log_info(msg_buf);
+        #endif
+
         handler(str);
     }
 

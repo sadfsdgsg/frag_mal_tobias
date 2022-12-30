@@ -1,21 +1,21 @@
 // include the library
 #include "pinout.h"
-#include "serial_debug.h"
+#include "logger.h"
 #include "Arduino.h"
 #include <RadioLib.h>
 #include "lora.hpp"
 
 void handle_incoming_lora_msg(String str){
   //prints the incoming LORA messages if there are any...
-  DEBUG(str);
+  log_info(str.c_str());
 }
 
 void setup() {
-  START_DEBUG(115200);
+  log_begin();
   lora_start();
   lora_shall_receive(true);
   register_lora_msg_handler(handle_incoming_lora_msg);
-  DEBUG("finished initialization");
+  logf_info("Logging mit printf ist toll %d, %s, %.3f", 1337, "!!!1einself", 3.1415926);
 }
 
 void loop() {
