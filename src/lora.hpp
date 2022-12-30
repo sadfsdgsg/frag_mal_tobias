@@ -45,7 +45,7 @@ void set_rcv_flag(){
 void lora_start(){
     SPI.begin(LORA_SCK,LORA_MISO,LORA_MOSI,LORA_SS);
     // initialize SX1262 with default settings
-    Serial.print(F("[SX1262] Initializing ... "));
+    Serial.println(F("[SX1262] Initializing ... "));
     int state = radio.begin(868.0);
     radio.setDio1Action(set_rcv_flag);
     state = radio.startReceive();

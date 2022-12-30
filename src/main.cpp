@@ -11,9 +11,11 @@ void handle_incoming_lora_msg(String str){
 }
 
 void setup() {
+  START_DEBUG(115200);
   lora_start();
   lora_shall_receive(true);
   register_lora_msg_handler(handle_incoming_lora_msg);
+  DEBUG("finished initialization");
 }
 
 void loop() {
