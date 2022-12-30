@@ -5,7 +5,7 @@
 #include "Arduino.h"
 #include <RadioLib.h>
 
-typedef void (*msg_handler)(String);
+typedef void (*msg_handler)(uint8_t*, size_t);
 
 
 /**
@@ -102,7 +102,7 @@ void lora_maintain(){
             logf_info("[LoRa] message '%s' read with status: %d", (char*) msg, state);
         #endif
 
-        handler((char*) msg);
+        handler(msg, packetLength);
     }
 
     /*

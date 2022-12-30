@@ -5,9 +5,16 @@
 #include <RadioLib.h>
 #include "lora.hpp"
 
-void handle_incoming_lora_msg(String str){
+
+void handle_incoming_lora_msg(uint8_t* data, size_t dataLength){
   //prints the incoming LORA messages if there are any...
-  log_info(str.c_str());
+
+  log_info("Message Begin ->");
+  for (int i = 0; i < dataLength; i++)
+  {
+     logf_info("Byte %i = '%d'", i, data[i]);
+  }
+  log_info("<- Message End\n");
 }
 
 void setup() {
