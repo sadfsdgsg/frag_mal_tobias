@@ -4,5 +4,6 @@
 .vscode/launch.json
 .vscode/ipch
 .vscode/
+.DS_Store
 src/wifi_config.h
 src/debug_config.h
