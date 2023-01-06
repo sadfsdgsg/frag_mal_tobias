@@ -1,3 +1,4 @@
+#pragma once
 
 #include "Arduino.h"
 #include "SSD1306Wire.h"
@@ -52,15 +53,16 @@ void display_addVisualisation(Visualisation* visualisation) {
     display_hasChanges = true;
 }
 
-void display_removeVisualisation(Visualisation** visualisation) {
-    if (*visualisation == nullptr)
+void display_removeVisualisation(Visualisation* visualisation) {
+    if (visualisation == nullptr)
         return;
 
-    visualisations.remove(*visualisation);
-    delete(*visualisation);
-    *visualisation = nullptr;
+    visualisations.remove(visualisation);
+    // delete(*visualisation);
+    // *visualisation = nullptr;
 
-    display_hasChanges = true;
+    // display_hasChanges = true;
+    // log_info("wurde geloscht");
 }
 
 void display_maintain() {
@@ -68,7 +70,7 @@ void display_maintain() {
         if (visualisation->animate() || visualisation->hasChanges())
             display_hasChanges = true;
     }
-        
+      
     if (!display_hasChanges)
         return;
 

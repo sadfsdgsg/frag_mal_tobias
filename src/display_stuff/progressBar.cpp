@@ -14,6 +14,8 @@ ProgressBar::~ProgressBar() {
 
 void ProgressBar::setProgressTime(unsigned long progressTimePerPercent) {
     this->setFieldMode(FIELD_MODE_LIMITED, progressTimePerPercent);
+    this->progress = 0;
+    this->isChanged();
 }
 
 void ProgressBar::setProgress(uint8_t progress) {
@@ -22,7 +24,9 @@ void ProgressBar::setProgress(uint8_t progress) {
 }
 
 void ProgressBar::executeAnimation() {
-    this->progress++;
+    if (this->progress < 100)
+        this->progress++;
+
     this->isChanged();
 }
 

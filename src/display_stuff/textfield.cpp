@@ -1,7 +1,7 @@
 
 #include "textfield.h"
 
-Textfield::Textfield(String text, uint16_t x, uint16_t y, uint16_t maxWidthInPixels, OLEDDISPLAY_TEXT_ALIGNMENT alignment, const uint8_t *fontData)
+Textfield::Textfield(std::string text, uint16_t x, uint16_t y, uint16_t maxWidthInPixels, OLEDDISPLAY_TEXT_ALIGNMENT alignment, const uint8_t *fontData)
 : Visualisation{x, y, maxWidthInPixels, 0}
 {
     this->text = text;
@@ -13,12 +13,24 @@ Textfield::~Textfield() {
 
 }
 
-void Textfield::additionalText(String text) {
+void Textfield::setText(std::string text) {
+    if (this->getFieldMode() != FIELD_MODE_NO_ANIMATION)
+        additionalText(text);
+    else
+        this->text = text;
+}
+
+void Textfield::additionalText(std::string text) {
     this->textList.push_back(text);
 }
 
+void Textfield::clearTextList() {
+    this->textList.clear();
+    this->text = "";
+}
+
 void Textfield::executeAnimation() {
-    if (this->textList.size() < 1 && this->text == "")
+    if (this == nullptr || this->textList.size() < 1 && this->text == "")
         return;
 
     switch (this->getFieldMode())
@@ -40,11 +52,14 @@ void Textfield::executeAnimation() {
 }
 
 void Textfield::show(SSD1306Wire* display) {
-    while(display->getStringWidth(this->text) > this->getWidth() && this->text.length() > 0) {
-        this->text = this->text.substring(0, this->text.length() - 1);
+    const char* c_text = this->text.c_str();   //SSD1306Wire only work
+    String text = c_text;                      // with String, not std::string
+
+    while(display->getStringWidth(text) > this->getWidth() && text.length() > 0) {
+        text = text.substring(0, text.length() - 1);
     }
     display->setFont(this->fontData);
     display->setTextAlignment(this->alignment);
-    display->drawString(this->getX(), this->getY(), this->text);
+    display->drawString(this->getX(), this->getY(), text);
 }
 
