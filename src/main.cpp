@@ -47,6 +47,7 @@ void showBTResults() {
   std::string infoText = "BLE " +  std::to_string(bluetooth_getScanResults()->getCount()) + " devices found";
   btInfo->setText(infoText);
 
+  btAdresses->clearTextList();
   for (int i = 0; i < bluetooth_getScanResults()->getCount(); i++) {
     btAdresses->additionalText(bluetooth_getScanResults()->getDevice(i).getAddress().toString());
   }
