@@ -20,6 +20,10 @@ void Textfield::setText(std::string text) {
         this->text = text;
 }
 
+std::string Textfield::getText() {
+    return this->text;
+}
+
 void Textfield::additionalText(std::string text) {
     this->textList.push_back(text);
 }

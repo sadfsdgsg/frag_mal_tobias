@@ -12,8 +12,8 @@ ProgressBar::~ProgressBar() {
 
 }
 
-void ProgressBar::setProgressTime(unsigned long progressTimePerPercent) {
-    this->setFieldMode(FIELD_MODE_LIMITED, progressTimePerPercent);
+void ProgressBar::setProgressTime(unsigned long progressTimeInMs) {
+    this->setFieldMode(FIELD_MODE_LIMITED, progressTimeInMs / 100);
     this->progress = 0;
     this->isChanged();
 }

@@ -37,6 +37,11 @@ void VextOFF(void)  //Vext default OFF
   digitalWrite(Vext, HIGH);
 }
 
+/**
+ * @brief  start and init the display.
+ *          Display parameter are set for the Heltec LoRa board V3, display-size 128x64.
+ *          Display parameter are ste in the OLEDDisplay.cpp.
+ */
 void display_start() {
 
   VextON();
@@ -48,11 +53,23 @@ void display_start() {
   display.setContrast(255);
 }
 
+/**
+ * @brief  Add a class object that inherits the Visualisation class, 
+ *          it will be displayed at the next call the display_maintain function.
+ * 
+ * @param visualisation 
+ */
 void display_addVisualisation(Visualisation* visualisation) {
     visualisations.push_back(visualisation);
     display_hasChanges = true;
 }
 
+/**
+ * @brief  remove the Visualisation from the display.
+ *          Do not forget to delete the Visualiation object after call this function.        
+ * 
+ * @param visualisation 
+ */
 void display_removeVisualisation(Visualisation* visualisation) {
     if (visualisation == nullptr)
         return;
@@ -65,6 +82,10 @@ void display_removeVisualisation(Visualisation* visualisation) {
     // log_info("wurde geloscht");
 }
 
+/**
+ * @brief display_maintain is necessary to update the display changing some Visualisation.
+ * 
+ */
 void display_maintain() {
     for (Visualisation* visualisation : visualisations) {
         if (visualisation->animate() || visualisation->hasChanges())

@@ -87,19 +87,19 @@ void lora_maintain(){
     */
     lora_interrupt_enabled = false;
 
-    log_info("[LoRa] received a message!");
+    //log_info("[LoRa] received a message!");
 
     if (handler == nullptr){
         log_warn("[LoRa] no message handler registered!");
     } else {
         size_t packetLength = radio.getPacketLength();
-        logf_info("[LoRa] packet length '%d'", packetLength);
+        //logf_info("[LoRa] packet length '%d'", packetLength);
         uint8_t msg[packetLength + 1];
         int state = radio.readData(msg, packetLength);
         msg[packetLength] = '\0';
 
         #ifdef USE_LOGGER
-            logf_info("[LoRa] message '%s' read with status: %d", (char*) msg, state);
+            //logf_info("[LoRa] message '%s' read with status: %d", (char*) msg, state);
         #endif
 
         handler(msg, packetLength);
